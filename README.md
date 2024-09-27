@@ -7,3 +7,6 @@ venv\Scripts\activate
 
 # Requirements
 pip install -r requirements.txt
+
+# Issues
+Cannot run build on Azure Devops since there is issue with parallelism - need to purchase/be granted free version by request.
