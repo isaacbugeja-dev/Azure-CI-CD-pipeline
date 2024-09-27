@@ -1,0 +1,34 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'  # Specify Python version, e.g., 3.8, 3.x for any 3.x version
+    addToPath: true  # Add Python to the system PATH
+
+
+- script: | # Create venv, activate venv and install dependencies.
+    python -m venv venv  
+    source venv/bin/activate  
+    pip install -r requirements.txt  
+  displayName: 'Install dependencies'  # Display name of this task in the pipeline logs.
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'  # The root directory containing the code
+    includeRootFolder: false  # Do not include the root folder in the archive
+    archiveType: 'zip'  # Specify the archive type
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path for the zip file
+    replaceExistingArchive: true  # Replace if archive already exists
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path to the archived zip file
+    ArtifactName: 'drop'  # Name of the artifact to publish
