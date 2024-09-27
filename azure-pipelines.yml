@@ -1,34 +1,38 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Simple pipeline
+# This pipeline builds and prepares a Python application for deployment.
 
 trigger:
-- main
+- main  # Trigger the pipeline on pushes to the main branch.
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'  # Use the latest Ubuntu virtual machine.
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.x'  # Specify Python version, e.g., 3.8, 3.x for any 3.x version
-    addToPath: true  # Add Python to the system PATH
+    versionSpec: '3.x'  # Specify Python version, e.g., 3.8, 3.x for any 3.x version.
+    addToPath: true  # Add Python to the system PATH.
 
-
-- script: | # Create venv, activate venv and install dependencies.
+- script: |  # Create a virtual environment and install dependencies.
     python -m venv venv  
     source venv/bin/activate  
     pip install -r requirements.txt  
-  displayName: 'Install dependencies'  # Display name of this task in the pipeline logs.
+  displayName: 'Install dependencies'  # Display name for the task in the pipeline logs.
+
+- script: |  # Run your tests here (example).
+    source venv/bin/activate  # Activate the virtual environment.
+    python -m unittest discover -s tests  # Adjust as necessary for your testing framework.
+  displayName: 'Run Tests'  # Display name for the test step in the pipeline logs.
+
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'  # The root directory containing the code
-    includeRootFolder: false  # Do not include the root folder in the archive
-    archiveType: 'zip'  # Specify the archive type
-    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path for the zip file
-    replaceExistingArchive: true  # Replace if archive already exists
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'  # The root directory containing the code.
+    includeRootFolder: false  # Do not include the root folder in the archive.
+    archiveType: 'zip'  # Specify the archive type.
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path for the zip file.
+    replaceExistingArchive: true  # Replace if the archive already exists.
+
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path to the archived zip file
-    ArtifactName: 'drop'  # Name of the artifact to publish
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app.zip'  # Path to the archived zip file.
+    ArtifactName: 'drop'  # Name of the artifact to publish.
